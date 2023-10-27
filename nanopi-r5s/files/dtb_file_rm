@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+version="$1"
+target="/boot/rk3568-nanopi-r5s.dtb-${version}"
+
+# passing the kernel version is required
+if [ -z "${version}" ]; then
+	echo >&2 "$(basename ${0}: ${DPKG_MAINTSCRIPT_PACKAGE:-kernel package} did not pass a version number"
+	exit 1
+fi
+
+echo "$(basename ${0}): ${target} remove"
+rm -f "${target}"
+

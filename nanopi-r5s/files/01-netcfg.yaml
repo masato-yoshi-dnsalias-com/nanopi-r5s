@@ -1,0 +1,11 @@
+inetwork:
+  ethernets:
+    wan0:
+      dhcp4: yes
+      dhcp6: yes
+    lan1:
+      dhcp4: yes
+      dhcp6: yes
+    lan2:
+      dhcp4: yes
+      dhcp6: yes

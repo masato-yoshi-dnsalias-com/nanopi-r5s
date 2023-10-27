@@ -1,0 +1,70 @@
+#!/bin/bash
+set -e
+MMC_IMAGE=xxxxxx.img.xz
+
+script=$(realpath ${0})
+permission=$(stat -c %a ${script})
+
+if [ 774 -eq ${permission} ]; then
+  # resize rootfs
+  resize2fs "$(findmnt -no source /)"
+  rm "${script}"
+  systemctl stop rc-local.service
+elif [ -f /${MMC_IMAGE} ]; then
+  xzcat -v /${MMC_IMAGE} > /dev/mmcblk1 2> /dev/console && sync
+  shutdown -h now
+else  
+  # machine initialize
+  rm -f /etc/machine-id
+  dbus-uuidgen --ensure=/etc/machine-id
+  dpkg-reconfigure openssh-server
+  systemctl enable ssh.service
+
+  # resize rootfs & change uuid
+  rootpart="$(findmnt -no source /)"
+  rootpartnum="$(echo "${rootpart}" | grep -Eo '[[:digit:]]*$')"
+  rootdisk="/dev/$(lsblk -no pkname "${rootpart}")"
+  uuid="$(cat /proc/sys/kernel/random/uuid)"
+  echo "write" | sfdisk -f "${rootdisk}"
+  echo "start=32768, size=" | sfdisk -f "${rootdisk}"
+  echo "uuid=${uuid}" | sfdisk -f -N "${rootpartnum}" "${rootdisk}"
+
+  # change rootfs uuid
+  uuid="$(cat /proc/sys/kernel/random/uuid)"
+  echo "changing rootfs uuid: ${uuid}"
+  tune2fs -U "${uuid}" "${rootpart}"
+  sed -i "s|$(findmnt -fsno source '/')|UUID=${uuid}|" '/etc/fstab'
+  /boot/mk_uboot_menu
+
+  # generate random mac address
+  macd=$(xxd -s250 -l6 -p /dev/urandom)
+
+  cat <<-EOF > /etc/systemd/network/10-name-lan1.link
+	[Match]
+	Path=platform-3c0000000.pcie-pci-0000:01:00.0
+	[Link]
+	Name=lan1
+	MACAddress=$(printf '%012x' $((0x$macd & 0xfefffffffffc | 0x200000000000)) | sed 's/../&:/g;s/:$//')
+	EOF
+
+  cat <<-EOF > /etc/systemd/network/10-name-lan2.link
+	[Match]
+	Path=platform-3c0400000.pcie-pci-0001:01:00.0
+	[Link]
+	Name=lan2
+	MACAddress=$(printf '%012x' $((0x$macd & 0xfefffffffffc | 0x200000000001)) | sed 's/../&:/g;s/:$//')
+	EOF
+
+  cat <<-EOF > /etc/systemd/network/10-name-wan0.link
+	[Match]
+	Path=platform-fe2a0000.ethernet
+	[Link]
+	Name=wan0
+	MACAddress=$(printf '%012x' $((0x$macd & 0xfefffffffffc | 0x200000000002)) | sed 's/../&:/g;s/:$//')
+	EOF
+
+  # setup for expand fs
+  chmod 774 "${script}"
+  sync; sync
+  reboot
+fi

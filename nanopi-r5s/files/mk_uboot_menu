@@ -1,0 +1,72 @@
+#!/bin/bash 
+set -e
+
+MENU_ENABLE='auto'      # true, false, auto
+MENU_ITEMS=2            # max kernels in menu
+MENU_TIMEOUT=3          # timeout in seconds
+MENU_PROMPT=0           # menu prompt
+CMD_LINE='ro rootwait console="ttyS2,1500000" console="tty"'  # optional: ipv6.disable=1
+
+# import release info
+if [ -e /etc/os-release ]; then
+    . /etc/os-release
+elif [ -e /usr/lib/os-release ]; then
+    . /usr/lib/os-release
+fi
+
+if [ 0 -ne $(id -u) ]; then
+  echo "$(basename "$0"): this script must be run as root"
+  exit 9
+fi
+
+uncompress_vzimage(){
+  local kernel_ver="$1"
+
+  local boot_dir=$([ "$(stat --printf %d /)" -eq "$(stat --printf %d /boot)" ] && echo '/boot')
+
+  if [ "gzip" = "$(file ${boot_dir}/vmlinuz-${kernel_ver} | awk '{print $2}')" ]; then
+    mv ${boot_dir}/vmlinuz-${kernel_ver} ${boot_dir}/vmlinuz-${kernel_ver}.gz
+    gunzip ${boot_dir}/vmlinuz-${kernel_ver}.gz
+  fi
+}
+
+kernel_vers="$(linux-version list | linux-version sort --reverse | head -n ${MENU_ITEMS})"
+kernel_ver_count="$(echo "${kernel_vers}" | wc -w)"
+
+# menu hader create
+menu_config=$(
+  echo "#"
+  echo "# this is an automatically generated file"
+  echo "#\n"
+  echo "menu title u-boot menu"
+  echo "prompt ${MENU_PROMPT}"
+  echo "default l0"
+  echo "timeout ${MENU_TIMEOUT}"
+  echo "\n")
+
+rootdev="$(findmnt -fsno source '/')"
+if [ -z "${rootdev}" ]; then
+  rootdev="$(cat /proc/cmdline | sed -re 's/.*root=([^[:space:]]*).*/\1/')"
+fi
+
+echo "${rootdev}"
+
+num=0
+params="root=${rootdev} ${CMD_LINE}"
+boot_dir=$([ "$(stat --printf %d /)" -eq "$(stat --printf %d /boot)" ] && echo '/boot')
+
+for kernel_ver in ${kernel_vers}; do
+  menu_entry=$(
+    echo "label l${num}"
+    echo "\tmenu label ${PRETTY_NAME} ${kernel_ver}"
+    echo "\tlinux ${boot_dir}/vmlinuz-${kernel_ver}"
+    echo "\tinitrd ${boot_dir}/initrd.img-${kernel_ver}"
+    echo "\tfdt ${boot_dir}/rk3568-nanopi-r5s.dtb-${kernel_ver}"
+    echo "\tappend ${params}")
+  uncompress_vzimage "${kernel_ver}"
+  menu_config="${menu_config}\n${menu_entry}\n"
+done
+
+mkdir -pv '/boot/extlinux'
+echo -e "${menu_config}" > '/boot/extlinux/extlinux.conf'
+echo 'file /boot/extlinux/extlinux.conf updated successfully'

@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+version="${1}"
+source='/boot/rk3568-nanopi-r5s.dtb'
+target="/boot/rk3568-nanopi-r5s.dtb-${version}"
+
+# passing the kernel version is required
+if [ -z "${version}" ]; then
+	echo >&2 "$(basename ${0}): ${DPKG_MAINTSCRIPT_PACKAGE:-kernel package} did not pass a version number"
+	exit 1
+fi
+
+if [ -e "${source}" ]; then
+	echo "$(basename ${0}): symlink "
+	ln -sfv "$(basename "${source}")" "${target}"
+else
+	echo >&2 "$(basename ${0}): ${source} not found"
+	exit 3
+fi
+
