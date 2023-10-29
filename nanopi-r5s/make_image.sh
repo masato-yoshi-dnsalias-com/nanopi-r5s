@@ -140,8 +140,8 @@ trap on_exit EXIT INT QUIT ABRT TERM
   install -Dvm 644 'files/modules' "${mountpt}/etc/modules"
 
   pkgs="bash-completion, bridge-utils, cockpit, conntrack, dbus, dhcpcd5, fdisk, file, gdisk, inetutils-traceroute, initramfs-tools"
-  pkgs="${pkgs}, libpam-systemd, libosinfo-bin, linux-image-generic-hwe-22.04, man-db, net-tools, openvswitch-switch, openssh-server, perl"
-  pkgs="${pkgs}, systemd-timesyncd, tcpdump, wireless-regdb, wpasupplicant xz-utils"
+  pkgs="${pkgs}, libpam-systemd, libosinfo-bin, linux-image-generic-hwe-22.04, man-db, nano, net-tools, openvswitch-switch, openssh-server, perl"
+  pkgs="${pkgs}, systemd-timesyncd, tcpdump, vim, wireless-regdb, wpasupplicant xz-utils"
   pkgs="${pkgs}, ${extra_pkgs}"
   cat /etc/apt/sources.list | mmdebstrap --debug --skip=check/empty --components="main restricted universe multiverse" --include "${pkgs}" "${deb_dist}" "${mountpt}" -
   chroot "${mountpt}" dpkg -P flash-kernel
