@@ -139,7 +139,8 @@ trap on_exit EXIT INT QUIT ABRT TERM
   echo "installing Kernel Module Load File to /etc/modules"
   install -Dvm 644 'files/modules' "${mountpt}/etc/modules"
 
-  pkgs="bash-completion, bridge-utils, cockpit, conntrack, dbus, dhcpcd5, fdisk, file, gdisk, inetutils-traceroute, initramfs-tools"
+  pkgs="bash-completion, bridge-utils, bind9-dnsutils, cockpit, conntrack, dbus, fdisk, file, gdisk, htop"
+  pkgs="${pkgs}, iftop, inetutils-traceroute, initramfs-tools"
   pkgs="${pkgs}, libpam-systemd, libosinfo-bin, linux-image-generic-hwe-22.04, man-db, nano, net-tools, openvswitch-switch, openssh-server, perl"
   pkgs="${pkgs}, systemd-timesyncd, tcpdump, vim, wireless-regdb, wpasupplicant xz-utils"
   pkgs="${pkgs}, ${extra_pkgs}"
