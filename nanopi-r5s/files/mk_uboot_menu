@@ -25,8 +25,8 @@ uncompress_vzimage(){
   local boot_dir=$([ "$(stat --printf %d /)" -eq "$(stat --printf %d /boot)" ] && echo '/boot')
 
   if [ "gzip" = "$(file ${boot_dir}/vmlinuz-${kernel_ver} | awk '{print $2}')" ]; then
-    mv ${boot_dir}/vmlinuz-${kernel_ver} ${boot_dir}/vmlinuz-${kernel_ver}.gz
-    gunzip ${boot_dir}/vmlinuz-${kernel_ver}.gz
+    mv ${boot_dir}/vmlinuz-${kernel_ver} ${boot_dir}/vmlinux-${kernel_ver}.gz
+    gunzip ${boot_dir}/vmlinux-${kernel_ver}.gz
   fi
 }
 
@@ -59,7 +59,7 @@ for kernel_ver in ${kernel_vers}; do
   menu_entry=$(
     echo "label l${num}"
     echo "\tmenu label ${PRETTY_NAME} ${kernel_ver}"
-    echo "\tlinux ${boot_dir}/vmlinuz-${kernel_ver}"
+    echo "\tlinux ${boot_dir}/vmlinux-${kernel_ver}"
     echo "\tinitrd ${boot_dir}/initrd.img-${kernel_ver}"
     echo "\tfdt ${boot_dir}/rk3568-nanopi-r5s.dtb-${kernel_ver}"
     echo "\tappend ${params}")
