@@ -139,10 +139,12 @@ trap on_exit EXIT INT QUIT ABRT TERM
   echo "installing Kernel Module Load File to /etc/modules"
   install -Dvm 644 'files/modules' "${mountpt}/etc/modules"
 
-  pkgs="bash-completion, bridge-utils, bind9-dnsutils, cockpit, conntrack, dbus, fdisk, file, gdisk, htop"
+  pkgs="bash-completion, bridge-utils, bind9-dnsutils, cockpit, cockpit-networkmanager, cockpit-pcp, cockpit-storaged, conntrack"
+  pkgs="${pkgs}, dbus, fdisk, file, gdisk, htop"
   pkgs="${pkgs}, iftop, inetutils-traceroute, initramfs-tools"
-  pkgs="${pkgs}, libpam-systemd, libosinfo-bin, linux-image-generic-hwe-22.04, man-db, nano, net-tools, openvswitch-switch, openssh-server, perl"
-  pkgs="${pkgs}, systemd-timesyncd, tcpdump, vim, wireless-regdb, wpasupplicant xz-utils"
+  pkgs="${pkgs}, libpam-systemd, libosinfo-bin, linux-image-generic-hwe-22.04, lm-sensors, lshw"
+  pkgs="${pkgs}, man-db, nano, net-tools, openvswitch-switch, openssh-server, pciutils, perl"
+  pkgs="${pkgs}, systemd-timesyncd, tcpdump, usbutils, vim, wireless-regdb, wpasupplicant xz-utils"
   pkgs="${pkgs}, ${extra_pkgs}"
   cat /etc/apt/sources.list | mmdebstrap --debug --skip=check/empty --components="main restricted universe multiverse" --include "${pkgs}" "${deb_dist}" "${mountpt}" -
   chroot "${mountpt}" dpkg -P flash-kernel
@@ -188,7 +190,7 @@ trap on_exit EXIT INT QUIT ABRT TERM
   sed -i "s/MMC_IMAGE=xxxxxx.img.xz/MMC_IMAGE=${image_file}.xz/" "${mountpt}/etc/rc.local"
 
   echo "installing netplan config file to /etc/netplan/01-netcfg.yaml"
-  install -Dvm 644 'files/01-netcfg.yaml' "${mountpt}/etc/netplan/01-netcfg.yaml"
+  install -Dvm 600 'files/01-netcfg.yaml' "${mountpt}/etc/netplan/01-netcfg.yaml"
 
   # enable ssh root login
   chroot "${mountpt}" sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config

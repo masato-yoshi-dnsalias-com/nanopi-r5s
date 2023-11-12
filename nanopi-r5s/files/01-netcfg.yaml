@@ -1,4 +1,4 @@
-inetwork:
+network:
   ethernets:
     wan0:
       dhcp4: yes
