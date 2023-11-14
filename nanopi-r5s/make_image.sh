@@ -31,8 +31,9 @@ on_exit() {
       sync
       rm -rf "${mountpt}"
     fi
+    exit 9
   fi
-  exit 9
+  exit 0
 
 }
 
@@ -139,7 +140,8 @@ trap on_exit EXIT INT QUIT ABRT TERM
   echo "installing Kernel Module Load File to /etc/modules"
   install -Dvm 644 'files/modules' "${mountpt}/etc/modules"
 
-  pkgs="bash-completion, bridge-utils, bind9-dnsutils, cockpit, cockpit-networkmanager, cockpit-pcp, cockpit-storaged, conntrack"
+  pkgs="bash-completion, bridge-utils, bind9-dnsutils"
+  pkgs="${pkgs}, cockpit, cockpit-networkmanager, cockpit-packagekit, cockpit-podman, cockpit-pcp, cockpit-storaged, conntrack"
   pkgs="${pkgs}, dbus, fdisk, file, gdisk, htop"
   pkgs="${pkgs}, iftop, inetutils-traceroute, initramfs-tools"
   pkgs="${pkgs}, libpam-systemd, libosinfo-bin, linux-image-generic-hwe-22.04, lm-sensors, lshw"
