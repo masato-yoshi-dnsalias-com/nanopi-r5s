@@ -5,7 +5,7 @@ MENU_ENABLE='auto'      # true, false, auto
 MENU_ITEMS=2            # max kernels in menu
 MENU_TIMEOUT=3          # timeout in seconds
 MENU_PROMPT=0           # menu prompt
-CMD_LINE='ro rootwait console="ttyS2,1500000" console="tty"'  # optional: ipv6.disable=1
+CMD_LINE='ro rootwait console="ttyS2,1500000" console="tty" consoleblank=600'  # optional: ipv6.disable=1
 
 # import release info
 if [ -e /etc/os-release ]; then
