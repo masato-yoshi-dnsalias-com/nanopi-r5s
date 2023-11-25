@@ -13,7 +13,7 @@ fi
 target_dev="${1}"
 target=/tmp/target
 
-if [ -f /${MMC_IMAGE} -a -b ${target_dev}]; then
+if [ -f /${MMC_IMAGE} -a -b ${target_dev} ]; then
   xzcat -v /${MMC_IMAGE} > ${target_dev} 2> /dev/console && sync
 
   # resize rootfs & change uuid
