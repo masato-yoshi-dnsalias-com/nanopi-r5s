@@ -18,6 +18,8 @@ uboot_spl=cache.${ubuntu_dist}/${uboot_spl_file}
 uboot_itb=cache.${ubuntu_dist}/${uboot_itb_file}
 dtb=cache.${ubuntu_dist}/${dtb_file}
 
+xz_threads=0
+
 on_exit() {
 
   if mountpoint -q "${mountpt}"; then
@@ -224,7 +226,7 @@ trap on_exit EXIT INT QUIT ABRT TERM
 
   if [ "${compress}" != "nocomp" ]; then
     echo "compressing image file"
-    xz -z8vc "${image_file}" > "${image_file}".xz
+    xz -z8vc${xz_threads} "${image_file}" > "${image_file}".xz
 
     # compress image copy
     mkdir -p "${mountpt}"
