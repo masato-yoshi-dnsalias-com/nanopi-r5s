@@ -10,9 +10,9 @@ if [ 774 -eq ${permission} ]; then
   resize2fs "$(findmnt -no source /)"
   rm "${script}"
   systemctl stop rc-local.service
-elif [ -f /${MMC_IMAGE} ]; then
-  xzcat -v /${MMC_IMAGE} > /dev/mmcblk1 2> /dev/console && sync
-  shutdown -h now
+#elif [ -f /${MMC_IMAGE} ]; then
+#  xzcat -v /${MMC_IMAGE} > /dev/mmcblk1 2> /dev/console && sync
+#  shutdown -h now
 else  
   # machine initialize
   rm -f /etc/machine-id

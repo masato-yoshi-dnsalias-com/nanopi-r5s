@@ -194,6 +194,9 @@ trap on_exit EXIT INT QUIT ABRT TERM
   echo "installing netplan config file to /etc/netplan/01-netcfg.yaml"
   install -Dvm 600 'files/01-netcfg.yaml' "${mountpt}/etc/netplan/01-netcfg.yaml"
 
+  echo "installing boot_install.sh to /usr/local/bin/boot_install.sh"
+  install -Dvm 755 'files/boot_install.sh' "${mountpt}/usr/local/bin/boot_install.sh"
+
   # enable ssh root login
   chroot "${mountpt}" sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
