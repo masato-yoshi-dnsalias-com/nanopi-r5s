@@ -13,12 +13,8 @@ fi
 target_dev="${1}"
 target=/tmp/target
 
-if [ -f /${MMC_IMAGE} -a ${target_dev}]; then
+if [ -f /${MMC_IMAGE} -a -b ${target_dev}]; then
   xzcat -v /${MMC_IMAGE} > ${target_dev} 2> /dev/console && sync
-
-  # target folder create & mount
-  mkdir -p ${target}
-  mount ${target_dev} ${target}
 
   # resize rootfs & change uuid
   target_part=${target_dev}p1
@@ -27,6 +23,10 @@ if [ -f /${MMC_IMAGE} -a ${target_dev}]; then
   echo "write" | sfdisk -f "${target_dev}"
   echo "start=32768, size=" | sfdisk -f "${target_dev}"
   echo "uuid=${uuid}" | sfdisk -f -N "${target_partnum}" "${target_dev}"
+
+  # target folder create & mount
+  mkdir -p ${target}
+  mount ${target_part} ${target}
 
   # change rootfs uuid
   uuid="$(cat /proc/sys/kernel/random/uuid)"
@@ -70,4 +70,5 @@ if [ -f /${MMC_IMAGE} -a ${target_dev}]; then
 
   # setup for expand fs
   sync; sync
+  umount ${target}
 fi

@@ -196,6 +196,7 @@ trap on_exit EXIT INT QUIT ABRT TERM
 
   echo "installing boot_install.sh to /usr/local/bin/boot_install.sh"
   install -Dvm 755 'files/boot_install.sh' "${mountpt}/usr/local/bin/boot_install.sh"
+  sed -i "s/MMC_IMAGE=xxxxxx.img.xz/MMC_IMAGE=${image_file}.xz/" "${mountpt}/usr/local/bin/boot_install.sh"
 
   # enable ssh root login
   chroot "${mountpt}" sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
