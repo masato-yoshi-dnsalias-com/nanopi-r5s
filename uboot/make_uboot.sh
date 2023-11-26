@@ -3,7 +3,7 @@ set -e
 
   cd "$(dirname "$(realpath "${0}")")"
 
-  utag='v2023.10'
+  utag='v2024.01-rc3'
   atf_file='../rkbin/bin/rk35/rk3568_bl31_v1.43.elf'
   tpl_file='../rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.18.bin'
 
