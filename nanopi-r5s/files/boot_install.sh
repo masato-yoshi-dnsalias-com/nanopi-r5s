@@ -2,9 +2,6 @@
 set -e
 MMC_IMAGE=xxxxxx.img.xz
 
-script=$(realpath ${0})
-permission=$(stat -c %a ${script})
-
 if [ "${1}" = "" ]; then
   echo "usage : $(basename) target"
   exit 0
@@ -27,6 +24,10 @@ if [ -f /${MMC_IMAGE} -a -b ${target_dev} ]; then
   # target folder create & mount
   mkdir -p ${target}
   mount ${target_part} ${target}
+
+  # resize rootfs
+  resize2fs "$(findmnt -no source ${target})"
+  rm -f "${target}/etc/rc.local"
 
   # change rootfs uuid
   uuid="$(cat /proc/sys/kernel/random/uuid)"
