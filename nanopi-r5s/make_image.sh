@@ -233,6 +233,7 @@ trap on_exit EXIT INT QUIT ABRT TERM
     mount -no loop,offset=16M "${image_file}" "${mountpt}"
     cp -p "${image_file}".xz "${mountpt}"
     cp -p "${uboot_spl}" "${mountpt}"
+    cp -p "${uboot_itb}" "${mountpt}"
     umount "${mountpt}"
     rm -rf "${mountpt}"
 
