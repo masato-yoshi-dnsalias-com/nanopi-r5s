@@ -11,6 +11,15 @@ target_dev="${1}"
 target=/tmp/target
 
 if [ -f /${MMC_IMAGE} -a -b ${target_dev} ]; then
+
+  # clean mmcblk1
+  dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=1024
+
+  # install u-boot
+  dd bs=4K seek=8 if=/idbloader-r5s.img of=/dev/mmcblk1
+  dd bs=4K seek=2048 if=/u-boot-r5s.itb of=/dev/mmcblk1
+
+  # install boot image
   xzcat -v /${MMC_IMAGE} > ${target_dev} 2> /dev/console && sync
 
   # resize rootfs & change uuid
